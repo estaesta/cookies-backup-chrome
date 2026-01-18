@@ -38,6 +38,38 @@
           </form>
         </div>
       </div>
+      <div class="wrap" id="auto-backup-wrap">
+        <span class="title">Auto-Backup Settings</span>
+        <div class="gap-10px">
+          <label class="checkbox-label">
+            <input type="checkbox" id="auto-backup-enabled" />
+            <span>Enable automatic backups</span>
+          </label>
+          <div id="auto-backup-options" class="gap-10px hidden">
+            <div class="gap-5px">
+              <small><b>Backup interval</b></small>
+              <select id="auto-backup-interval" class="select-input">
+                <option value="monthly">Monthly (every 30 days)</option>
+                <option value="biweekly">Biweekly (every 2 weeks)</option>
+              </select>
+            </div>
+            <div class="gap-5px">
+              <small><b>Auto-backup password</b></small>
+              <input
+                type="password"
+                id="auto-backup-password"
+                minlength="3"
+                placeholder="password for auto-backups"
+                class="input-field"
+              />
+              <small class="text-muted">This password will be used for automatic backups</small>
+            </div>
+            <button class="btn-primary" id="btn-save-auto-backup">
+              Save Settings
+            </button>
+          </div>
+        </div>
+      </div>
       <div class="wrap" id="restore-wrap">
         <span class="title">Restore Cookies</span>
         <div id="restore-upload-wrap" class="wrap-tight">

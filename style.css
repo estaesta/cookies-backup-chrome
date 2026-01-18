@@ -135,6 +135,55 @@ textarea:focus {
   box-shadow: rgba(3, 102, 214, 0.3) 0px 0px 0px 3px;
 }
 
+.select-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 5px 12px;
+  vertical-align: middle;
+  background-color: #fff;
+  border: 1px solid var(--light-blue-grey);
+  border-radius: 6px;
+  outline: none;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.select-input:focus {
+  border-color: #0366d6;
+  outline: none;
+  box-shadow: rgba(3, 102, 214, 0.3) 0px 0px 0px 3px;
+}
+
+input[type="checkbox"] {
+  cursor: pointer;
+  margin-right: 8px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.input-field {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 5px 12px;
+  vertical-align: middle;
+  background-color: #fff;
+  border: 1px solid var(--light-blue-grey);
+  border-radius: 6px;
+  outline: none;
+  box-shadow: rgba(225, 228, 232, 0.2) 0px 1px 0px 0px inset;
+}
+
+.input-field:focus {
+  border-color: #0366d6;
+  outline: none;
+  box-shadow: rgba(3, 102, 214, 0.3) 0px 0px 0px 3px;
+}
+
 .btn-enter {
   background-color: #ffffff;
   padding: 5px 10px;
