@@ -2,7 +2,7 @@
   "name": "Cookie Backup and Restore",
   "version": "4.1",
   "description": "Backups and Encrypts all the cookies and Decrypts and Restores them when you need it.",
-  "permissions": ["cookies", "downloads"],
+  "permissions": ["cookies", "downloads", "alarms", "storage", "notifications"],
   "host_permissions": ["<all_urls>"],
   "icons": {
     "16": "icons/16.png",
@@ -12,6 +12,9 @@
   "action": {
     "default_title": "Backup & restore your cookies!",
     "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
   },
   "manifest_version": 3
 }

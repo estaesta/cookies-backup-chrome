@@ -14,6 +14,13 @@ document.getElementById("btn-backup").onclick = showEncPasswordInputBox;
 
 document.getElementById("btn-upload-fallback").onclick = showFallbackCkzInput;
 
+// Auto-backup settings event listeners
+document.getElementById("auto-backup-enabled").addEventListener("change", handleAutoBackupToggle);
+document.getElementById("btn-save-auto-backup").addEventListener("click", saveAutoBackupSettings);
+
+// Load auto-backup settings on popup load
+document.addEventListener("DOMContentLoaded", loadAutoBackupSettings);
+
 function handleEncPasswdSubmit(e) {
   e.preventDefault();
 
@@ -267,4 +274,72 @@ function getCkzFileDataAsText(cb) {
   } else {
     cb(getCkzFileContentsFromTextarea())
   }
+}
+
+// Auto-backup settings functions
+function handleAutoBackupToggle(e) {
+  const autoBackupOptions = document.getElementById("auto-backup-options");
+  if (e.target.checked) {
+    autoBackupOptions.classList.remove("hidden");
+  } else {
+    autoBackupOptions.classList.add("hidden");
+    // Clear alarm when disabled
+    chrome.runtime.sendMessage({ action: 'clearAlarm' }, (response) => {
+      console.log('Alarm cleared:', response.success);
+    });
+  }
+}
+
+function loadAutoBackupSettings() {
+  chrome.storage.sync.get(['autoBackupEnabled', 'autoBackupInterval', 'autoBackupPassword'], (result) => {
+    const enabledCheckbox = document.getElementById("auto-backup-enabled");
+    const intervalSelect = document.getElementById("auto-backup-interval");
+    const passwordInput = document.getElementById("auto-backup-password");
+    const autoBackupOptions = document.getElementById("auto-backup-options");
+    
+    if (result.autoBackupEnabled) {
+      enabledCheckbox.checked = true;
+      autoBackupOptions.classList.remove("hidden");
+    }
+    
+    if (result.autoBackupInterval) {
+      intervalSelect.value = result.autoBackupInterval;
+    }
+    
+    if (result.autoBackupPassword) {
+      passwordInput.value = result.autoBackupPassword;
+    }
+  });
+}
+
+function saveAutoBackupSettings() {
+  const enabled = document.getElementById("auto-backup-enabled").checked;
+  const interval = document.getElementById("auto-backup-interval").value;
+  const password = document.getElementById("auto-backup-password").value.trim();
+  
+  if (enabled && !password) {
+    alert("Please enter a password for auto-backups!");
+    return;
+  }
+  
+  // Save settings to Chrome storage
+  chrome.storage.sync.set({
+    autoBackupEnabled: enabled,
+    autoBackupInterval: interval,
+    autoBackupPassword: password
+  }, () => {
+    if (enabled) {
+      // Set up the alarm in background script
+      chrome.runtime.sendMessage({ 
+        action: 'setupAlarm', 
+        interval: interval 
+      }, (response) => {
+        if (response.success) {
+          addToSuccessMessageList(createSuccessAlert(`Auto-backup enabled! Backups will occur ${interval === 'biweekly' ? 'every 2 weeks' : 'monthly'}.`));
+        }
+      });
+    } else {
+      addToSuccessMessageList(createSuccessAlert('Auto-backup settings saved!'));
+    }
+  });
 }
