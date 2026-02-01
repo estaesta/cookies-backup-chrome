@@ -74,9 +74,6 @@ async function performAutoBackup() {
         let cookiesJson;
         try {
           cookiesJson = JSON.stringify(cookies);
-          if (!cookiesJson || cookiesJson === 'null' || cookiesJson === 'undefined') {
-            throw new Error('Invalid cookies data');
-          }
         } catch (jsonError) {
           console.error('Failed to serialize cookies:', jsonError);
           showNotification('Auto-backup failed', 'Invalid cookies data');
@@ -87,18 +84,9 @@ async function performAutoBackup() {
         let encryptedData;
         try {
           encryptedData = sjcl.encrypt(result.autoBackupPassword.trim(), cookiesJson, { ks: 256 });
-          if (!encryptedData) {
-            throw new Error('Encryption produced no output');
-          }
         } catch (encryptError) {
           console.error('Encryption failed:', encryptError);
-          if (encryptError.message && encryptError.message.includes('password')) {
-            showNotification('Auto-backup failed', 'Invalid password format');
-          } else if (encryptError.message && encryptError.message.includes('invalid')) {
-            showNotification('Auto-backup failed', 'Invalid encryption parameters');
-          } else {
-            showNotification('Auto-backup failed', 'Encryption error: ' + (encryptError.message || 'Unknown error'));
-          }
+          showNotification('Auto-backup failed', 'Encryption error: ' + (encryptError.message || 'Unknown error'));
           return;
         }
         
