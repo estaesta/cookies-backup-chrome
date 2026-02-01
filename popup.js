@@ -26,16 +26,46 @@ function handleEncPasswdSubmit(e) {
 
   const pass = getEncPasswd();
 
+  // Validate password
+  if (!pass || pass.trim() === '') {
+    alert("Password cannot be empty!");
+    return;
+  }
+
   chrome.cookies.getAll({}, (cookies) => {
     if (cookies.length > 0) {
-      const data = sjcl.encrypt(pass, JSON.stringify(cookies), { ks: 256 });
-      // only using en-GB because it puts the date first
-      const d = new Date()
-      const date = d.toLocaleDateString("en-GB").replace(/\//g, "-");
-      const time = d.toLocaleTimeString("en-GB").replace(/:/g, "-");
-      const filename = `cookies-${date}-${time}.ckz`;
-      downloadJson(data, filename)
-      backupSuccessAlert(cookies.length)
+      try {
+        // Validate and serialize cookies data
+        const cookiesJson = JSON.stringify(cookies);
+        if (!cookiesJson || cookiesJson === 'null' || cookiesJson === 'undefined') {
+          alert("Invalid cookies data!");
+          return;
+        }
+
+        // Encrypt the cookies with validation
+        const data = sjcl.encrypt(pass.trim(), cookiesJson, { ks: 256 });
+        if (!data) {
+          alert("Encryption failed to produce output!");
+          return;
+        }
+
+        // only using en-GB because it puts the date first
+        const d = new Date()
+        const date = d.toLocaleDateString("en-GB").replace(/\//g, "-");
+        const time = d.toLocaleTimeString("en-GB").replace(/:/g, "-");
+        const filename = `cookies-${date}-${time}.ckz`;
+        downloadJson(data, filename)
+        backupSuccessAlert(cookies.length)
+      } catch (error) {
+        console.error('Encryption error:', error);
+        if (error.message && error.message.includes('password')) {
+          alert("Invalid password format!");
+        } else if (error.message && error.message.includes('invalid')) {
+          alert("Invalid encryption parameters!");
+        } else {
+          alert("Encryption failed: " + (error.message || "Unknown error"));
+        }
+      }
     } else {
       alert("No cookies to backup!");
     }
